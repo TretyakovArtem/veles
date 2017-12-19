@@ -1,22 +1,33 @@
 import pygame
 
-
 window = pygame.display.set_mode((400, 400))
-
 pygame.display.set_caption('Hello pygame')
 
 screen = pygame.Surface((400, 400))
 
 
-square = pygame.Surface((40, 40))
-square.fill((0, 250, 250))
-x = 0
-y = 0
+class Sprite:
+    def __init__(self, xpos, ypos, filename):
+        self.x = xpos
+        self.y = ypos
+        self.bitmap = pygame.image.load(filename)
+        self.bitmap.set_colorkey((8, 0, 0))
 
-square_go_right = True
-square_go_down = True
+    def render(self):
+        screen.blit(self.bitmap, (self.x, self.y))
+
+def Intersect(x1,x2,y1,y2):
+    if(x1 > x2-40) and (x1 < x2+40) and (y1 > y2-40) and (y1 < y2+40):
+        return True
+    else:
+        return False
 
 
+
+hero = Sprite(200, 350, 'img/rocket.png')
+hero.up = True
+zet = Sprite(200, 10, 'img/goal.png')
+zet.up = True
 
 done = True
 
@@ -27,26 +38,30 @@ while done:
 
     screen.fill((50, 50, 50))
 
-    if square_go_right == True:
-        x += 1
-        if x>360:
-            square_go_right = False
+    if hero.up == True:
+        hero.y -= 1
+        if hero.y == 0:
+            hero.up = False
     else:
-        x -= 1
-        if x < 0:
-            square_go_right = True
+        hero.y += 1
+        if hero.y == 350:
+            hero.up = True
 
-
-    if square_go_down == True:
-        y += 1
-        if y > 360:
-            square_go_down = False
+    if zet.up == True:
+        zet.y -= 1
+        if zet.y == 0:
+            zet.up = False
     else:
-        y -= 1
-        if y < 0:
-            square_go_down = True
+        zet.y += 1
+        if zet.y == 350:
+            zet.up = True
 
-    screen.blit(square, (x, y))
+    if Intersect(zet.x, zet.y, hero.x, hero.y):
+        hero.up = False
+        zet.up = True
+
+    hero.render()
+    zet.render()
     window.blit(screen, (0, 0))
     pygame.display.flip()
 
